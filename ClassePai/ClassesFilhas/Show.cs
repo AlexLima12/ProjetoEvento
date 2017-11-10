@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using System.Text;
+
 
 namespace ProjetoEvento.ClassePai.ClassesFilhas
 {
@@ -12,7 +15,7 @@ namespace ProjetoEvento.ClassePai.ClassesFilhas
         {
         }
 
-        public Show(string titulo, string local, int lotacao, string duracao, int classificacao, DateTime data, string artista, string generomusical)
+        public Show(string titulo, string local, int lotacao, string duracao,  DateTime data, int classificacao, string artista, string generomusical)
         {
             base.Titulo = titulo;
             base.Local = local;
@@ -27,7 +30,54 @@ namespace ProjetoEvento.ClassePai.ClassesFilhas
         }
 
         public override bool Cadastrar(){
-            return false;
+             bool efetuado = false;
+            StreamWriter arquivo = null;
+            try
+            {
+                arquivo = new StreamWriter("show.csv", true);
+                arquivo.WriteLine(Titulo + ";" + Local + ";" + Duracao + ";" + Data + ";" + Lotacao + ";" + Classificacao + ";" + Artista + ";" + GeneroMusical);
+                efetuado = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao tentar gravar o arquivo." + ex.Message);
+            }
+            finally
+            {
+                arquivo.Close();
+            }
+            return efetuado;
+        }
+
+        /// <summary>
+        /// Pesquisa o título do show.
+        /// </summary>
+        /// <param name="Titulo">Utiliza o parâmetro do tipo string.</param>
+        /// <returns>Retorna se encontrou ou não o título pesquisado.</returns>
+        public override string Pesquisar(string Titulo)
+        {
+            string resultado = "";
+            StreamReader ler = null;
+            try
+            {
+                ler = new StreamReader("show.csv", Encoding.Default);
+                string linha = "";
+                while((linha = ler.ReadLine()) != null){
+                    string[] dados = linha.Split(';');
+                    if(dados[0] == Titulo){
+                        resultado = linha;
+                        break;
+                    }
+                }
+            }
+            catch(Exception ex){
+                resultado = "Erro ao tentar ler o arquivo." + ex.Message;
+
+            }
+            finally{
+                ler.Close();
+            }
+            return resultado;
         }
 
     }
